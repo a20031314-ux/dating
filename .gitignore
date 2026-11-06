@@ -1,0 +1,86 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# Capacitor (static export copy for native)
+/www/
+
+# Leftover only if a Capacitor build was interrupted mid-way
+/src/_capacitor_build_backup_api/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+# The example carries no secrets and is the only record of what must be set.
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# local verify fixtures
+/scripts/_verify-*.json
+/public/verify-bundle.json
+/tmp/verify/
+tmp/feature/
+
+# store screenshot raw captures (store-shots/capture.mjs); the composed images
+# go to fastlane/metadata and are committed
+/store-shots/out/
+/tmp/hub/
+
+# In-app feedback pulled for sorting: learners' screens, never committed.
+/tmp/feedback/
+# 스토어 탭별 캡처의 원본 화면 (scripts/capture-whats-new.mjs store-my/store-tabs → store-shots/tabs/compose.mjs)
+/tmp/store-raw/
+/tmp/store-layers/
+/tmp/sim-users/
+/tmp/digest/
+# 홍보 영상 녹화·편집 결과(store-shots/promo/)
+/tmp/promo/
+/tmp/cap-*.log
+/tmp/capture-failed-*.png
+/src/_capacitor_build_backup_door/
+/src/_capacitor_build_backup_ops/
+/tmp/service-map/
+/tmp/shots/
+/tmp/phone-map/
+/tmp/speech-trial/
+/tmp/stt-trial/
+tmp/ux/
+/tmp/quiz-sweep/
+/tmp/watch/
+/tmp/models/
+/tmp/ads-blank/
+/tmp/ads-passive/
+tmp/shared-examples/
