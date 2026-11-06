@@ -4,6 +4,8 @@ import { forgetPresence } from "./presenceStore.ts";
 import { forgetRandom } from "./randomStore.ts";
 import { forgetBan } from "./banStore.ts";
 import { forgetDating } from "./datingStore.ts";
+import { forgetMeets } from "./meetStore.ts";
+import { leaveAllGroups } from "./groupStore.ts";
 import { isIdentified } from "./identity.ts";
 import {
   EMAIL_CODE_LENGTH,
@@ -225,6 +227,9 @@ export async function deleteAccount(record: AccountRecord): Promise<void> {
   await forgetPresence(record.id);
   // 데이팅 프로필·사진·좋아요·매칭 목록(lib/server/datingStore.ts).
   await forgetDating(record.id);
+  // 연 모임은 닫고 신청은 지운 뒤, 모든 모임 단체방에서 나간다(meetStore·원본 groupStore).
+  await forgetMeets(record.id);
+  await leaveAllGroups(record.id);
   // 성인인증 기록·랜덤 대화 대기·만난 사람(lib/server/randomStore.ts).
   await forgetRandom(record.id);
   // 운영자 정지 표시(lib/server/banStore.ts).

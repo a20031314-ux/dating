@@ -95,6 +95,19 @@ const MESSAGES: Record<string, string> = {
   USED: "이미 쓴 인증이에요. 다시 인증해 주세요.",
   OFF: "이 정보로는 이용할 수 없어요.",
   NOT_CONFIGURED: "본인인증이 아직 준비되지 않았어요.",
+  HOST_LIMIT: "모임은 동시에 3개까지 열 수 있어요.",
+  NO_SEAT: "남은 자리가 없어요.",
+  CLOSED: "마감된 모임이에요.",
+  REJECTED: "참가할 수 없는 모임이에요.",
+  ALREADY: "이미 신청했어요.",
+  NO_MEET: "없어진 모임이에요.",
+  BLOCKED_TEXT: "이 내용은 올릴 수 없어요.",
+  BAD_TIME: "모임 시간은 지금부터 7일 안으로 정해 주세요.",
+  BAD_AREA: "동네를 적어 주세요.",
+  BAD_PLACE: "장소를 적어 주세요.",
+  BAD_SEATS: "인원은 나를 포함해 2~10명이에요.",
+  NOT_MEMBER: "모임에 참가한 사람만 볼 수 있어요.",
+  JOIN_FAILED: "참가 처리를 못 했어요. 다시 눌러 주세요.",
 };
 
 export function errorText(error: unknown): string {
@@ -182,6 +195,14 @@ export const Icon = {
   send: ({ className }: IconProps) => (
     <svg {...base(className)}>
       <path d="M4 12 20 4l-5 16-3-7-8-1Z" />
+    </svg>
+  ),
+  glasses: ({ className }: IconProps) => (
+    <svg {...base(className)}>
+      <path d="M5 4h6l-.6 6.2A2.4 2.4 0 0 1 8 12.4a2.4 2.4 0 0 1-2.4-2.2L5 4Z" />
+      <path d="M8 12.4V19M5.5 19h5" />
+      <path d="M13 6h6l-.6 6.2a2.4 2.4 0 0 1-2.4 2.2 2.4 2.4 0 0 1-2.4-2.2L13 6Z" />
+      <path d="M16 14.4V20M13.5 20h5" />
     </svg>
   ),
   shield: ({ className }: IconProps) => (

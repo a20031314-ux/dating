@@ -9,21 +9,23 @@ import { fetchVerifyStatus, submitVerification, takeReturnedVerification, type V
 import { ChatList, ChatRoom } from "./Chats";
 import { Discover } from "./Discover";
 import { LoginScreen } from "./LoginScreen";
+import { Meetups } from "./Meetups";
 import { MyPage } from "./MyPage";
 import { ProfileEditor } from "./ProfileEditor";
 import { ErrorLine, Icon } from "./ui";
 
-type Tab = "discover" | "likes" | "chats" | "me";
+type Tab = "discover" | "likes" | "meet" | "chats" | "me";
 
 const TABS: { id: Tab; label: string; icon: (on: boolean) => React.ReactNode }[] = [
   { id: "discover", label: "추천", icon: () => <Icon.cards /> },
   { id: "likes", label: "받은 좋아요", icon: (on) => <Icon.heart filled={on} /> },
+  { id: "meet", label: "모임", icon: () => <Icon.glasses /> },
   { id: "chats", label: "대화", icon: () => <Icon.chat /> },
   { id: "me", label: "내 정보", icon: () => <Icon.person /> },
 ];
 
 /**
- * 앱 틀: 로그인 → (처음이면) 프로필 만들기 → 하단 탭 넷(아이콘만, 이름은 aria-label).
+ * 앱 틀: 로그인 → (처음이면) 프로필 만들기 → 하단 탭 다섯(아이콘만, 이름은 aria-label).
  * 정적 내보내기(Capacitor)라 주소 대신 화면 상태로 옮겨 다닌다.
  */
 export function App() {
@@ -100,12 +102,13 @@ export function App() {
         <>
           {tab === "discover" && <Discover myPhoto={myPhoto} onMatch={() => setChatsKey((k) => k + 1)} onOpenChat={(m) => setChat(m.card)} />}
           {tab === "likes" && <Discover source="likedMe" myPhoto={myPhoto} onMatch={() => setChatsKey((k) => k + 1)} onOpenChat={(m) => setChat(m.card)} />}
+          {tab === "meet" && <Meetups me={account.id} myGender={profile.gender} myRegion={profile.region} />}
           {tab === "chats" && <ChatList refreshKey={chatsKey} onOpen={setChat} />}
           {tab === "me" && <MyPage account={account} profile={profile} verify={verify} onProfile={setProfile} onVerify={setVerify} />}
         </>
       )}
 
-      <nav className="grid grid-cols-4 border-t border-line pb-[max(env(safe-area-inset-bottom),8px)] pt-2" aria-label="탭">
+      <nav className="grid grid-cols-5 border-t border-line pb-[max(env(safe-area-inset-bottom),8px)] pt-2" aria-label="탭">
         {TABS.map((t) => {
           const on = t.id === tab;
           return (

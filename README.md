@@ -1,6 +1,6 @@
 # dating-app
 
-서로 좋아요를 누르면 대화가 열리는 데이팅 앱입니다. 영어 학습 앱 [english-chat-mvp-android](https://github.com/a20031314-ux/english-chat-mvp-android)의 **커뮤니티 기능(계정·1:1 메시지·차단·신고·성인 본인인증)** 을 그대로 가져와 그 위에 데이팅 기능(프로필·추천·좋아요·매칭)을 얹었습니다.
+서로 좋아요를 누르면 대화가 열리는 데이팅 앱 + 지역 번개 모임입니다. 영어 학습 앱 [english-chat-mvp-android](https://github.com/a20031314-ux/english-chat-mvp-android)의 **커뮤니티 기능(계정·1:1 메시지·차단·신고·성인 본인인증)** 을 그대로 가져와 그 위에 데이팅 기능(프로필·추천·좋아요·매칭)과 지역 모임(모집글 + 단체방)을 얹었습니다.
 
 > 앱 이름은 아직 정하지 않았습니다. 이름을 정하면 `package.json` `name`, `capacitor.config.ts` `appId`·`appName`, `src/app/layout.tsx` 제목, 환경 변수 `APP_NAME`을 바꾸세요. **`appId`는 Play에 한 번 올리면 바꿀 수 없습니다.**
 
@@ -13,6 +13,7 @@
 | 추천 | 서로 조건이 맞는 사람을 한 명씩. 같은 지역 먼저, 그다음 최근 접속 순. ✕ 패스 / ♥ 좋아요 |
 | 받은 좋아요 | 나를 좋아요한 사람. ♥를 누르면 바로 매칭 |
 | 매칭 | 서로 좋아요하면 그 자리에서 "연결됐어요" → 대화 시작 |
+| 모임 | 지역별 모집글(가까운 시각 순) · ＋ 모집하기 · 내 모임. 자세히 → 참가 신청 / (방장) 수락·거절·내보내기·모집 닫기 / 참가자끼리 단체방 채팅 |
 | 대화 | 새 매칭(사진 줄) + 대화 중인 사람(마지막 말·안 읽은 수). 3초마다 새 메시지, 읽음 표시 |
 | 대화 메뉴 | 매칭 끊기 · 신고하기(이유 고르기 + 상대 최근 메시지 5줄 첨부 + 자동 차단) · 차단하기 |
 | 내 정보 | 본인인증 · 사진 6장까지(대표 사진 바꾸기) · 프로필·조건 고치기 · 추천에 보이기 끄기 · 차단 풀기 · 로그아웃 · 계정 지우기 |
@@ -22,6 +23,7 @@
 - **매칭된 사람끼리만 메시지** — 원본의 "메시지 요청" 단계는 쓰지 않습니다.
 - **하루 좋아요 50번**(도배 방지, `DAILY_LIKES`).
 - 차단하면 매칭·대화가 끊기고 추천에 다시 나오지 않습니다.
+- **모임**: 신청 → 방장 수락 → 단체방. 목록엔 동네까지만, **정확한 장소는 참가자에게만**. 인원은 나 포함 2~10명, 성비(남 n·여 n)는 선택. 비용은 **N빵 / 각자 계산 / 주최자가 냄** 중 하나만 — 금액·성별 조건은 받지 않고, 글에 금액(…원)이나 유료 만남 표현이 있으면 올라가지 않습니다(`lib/meet/rules.ts` `hasBlockedText`). 모임 시각은 지금부터 7일 안, 시각 2시간 뒤 목록에서 빠짐. 방장은 동시에 3개, 신청은 하루 10번. 거절·내보내기 당하면 그 모임에 다시 신청 불가.
 - `ADULT_VERIFY_REQUIRED=1`이면 **본인인증한 사람끼리만** 추천·좋아요가 됩니다. 같은 사람(CI)은 한 계정만.
 
 ## 원본에서 가져온 것
@@ -35,6 +37,7 @@
 | 계정 저장(아이디·이메일·Google·프로필) | `lib/server/accountStore.ts` | 같은 경로 | 고침 — 계정 삭제 때 지우는 목록을 데이팅용으로 |
 | 계정 API 11개 | `app/api/account/**` | 같은 경로 | 고침 — 결제·초대 보상 연결 뺌 |
 | 계정 화면 쪽 요청·세션 | `lib/account/client.ts`·`session.ts`·`shared.ts` | 같은 경로 | 고침 — RevenueCat 연결 뺌 |
+| 단체방 저장(초대·참여·나가기·내보내기·읽음·30일) | `lib/server/groupStore.ts`, `lib/rooms/group.ts` | 같은 경로 | 그대로 — 모임 채팅으로 씀(승인 = 방장 초대 + 바로 참여) |
 | 1:1 메시지 저장(30일, 읽음·지우기·숨기기) | `lib/server/dmStore.ts`, `lib/rooms/dm.ts`·`quote.ts` | 같은 경로 | 그대로 |
 | 1:1 메시지 API | `app/api/dm/route.ts` | `app/api/dm/route.ts` | 고침 — 매칭된 사람만, 통화·아이콘·방 인용 뺌 |
 | 차단·신고 저장 | `lib/server/socialStore.ts` | 같은 경로 | 그대로 |
@@ -46,9 +49,9 @@
 | CORS | `lib/server/cors.ts` | 같은 경로 | 고침 — 창구·앱 버전 신호 뺌 |
 | 앱(Capacitor) 정적 빌드 | `scripts/build-capacitor.mjs` | 같은 경로 | 고침 — 창구·운영 페이지 처리 뺌 |
 
-원본 테스트도 함께 옮겨 통과를 확인했습니다(`kv`·`account`·`dmStore`·`socialStore`·`presenceStore`·`profileFacts`·`countries`·`dmSeen`).
+원본 테스트도 함께 옮겨 통과를 확인했습니다(`kv`·`account`·`dmStore`·`groupStore`·`socialStore`·`presenceStore`·`profileFacts`·`countries`·`dmSeen`).
 
-**가져오지 않은 것:** 학습 기능 전부(채팅 튜터·통화·커리큘럼·영상), 결제(RevenueCat)·포인트·광고, 말하는 방(Room)·단체방·게시판·팔로우, 화면 컴포넌트(`components/rooms/*` — 학습 기능과 얽혀 있어 새로 만들었습니다).
+**가져오지 않은 것:** 학습 기능 전부(채팅 튜터·통화·커리큘럼·영상), 결제(RevenueCat)·포인트·광고, 말하는 방(Room)·게시판·팔로우, 단체방의 팀·워크스페이스 화면, 화면 컴포넌트(`components/rooms/*` — 학습 기능과 얽혀 있어 새로 만들었습니다).
 
 ## 새로 만든 것
 
@@ -59,6 +62,9 @@
 | `lib/server/datingCards.ts` | 계정 + 데이팅 프로필 → 화면 카드(아이디·이메일·출생 연도 원값은 안 나감) |
 | `app/api/dating/route.ts` | 데이팅 API(아래) |
 | `app/api/dating/photo/route.ts` | 사진 파일 |
+| `lib/meet/rules.ts` | 모임 모양, 자리(성비) 계산, 모집 중인지, 모집글 검사·금지 표현 — 앱·서버 공용 |
+| `lib/server/meetStore.ts` | 모집글·신청·승인·나가기·내보내기·닫기·한도. 채팅은 원본 `groupStore` |
+| `app/api/meet/route.ts` | 모임 API(아래) |
 | `components/*` | 화면 전부 |
 
 ### 저장하는 것 (KV 키)
@@ -74,7 +80,12 @@
 | `dating:v1:matches:<계정>` | 매칭 | — |
 | `dating:v1:likes:<계정>:<날짜>` | 그날 보낸 좋아요 수 | 2일 |
 
-원본 키(`account:v1:*`, `dm:*`, `social:v1:*`, `random:v1:*`, `ops:v1:ban:*`)는 원본과 같은 모양입니다. 계정을 지우면 `accountStore.deleteAccount`가 위 데이팅 키·성인인증·정지 기록까지 함께 지웁니다.
+| `meet:v1:m:<모임>` | 모집글(지역·동네·장소·시각·자리·비용·소개·단체방 id) | 모임 시각 + 30일 |
+| `meet:v1:apps:<모임>` | 신청(계정·성별·상태) | 모임 시각 + 30일 |
+| `meet:v1:region:<지역>` / `meet:v1:host:<계정>` / `meet:v1:mine:<계정>` | 지역별·내가 연·내가 신청한 모임 | — |
+| `meet:v1:applies:<계정>:<날짜>` | 그날 보낸 신청 수 | 2일 |
+
+원본 키(`account:v1:*`, `dm:*`, `grp:v1:*`, `social:v1:*`, `random:v1:*`, `ops:v1:ban:*`)는 원본과 같은 모양입니다. 계정을 지우면 `accountStore.deleteAccount`가 위 데이팅 키·성인인증·정지 기록을 지우고, 연 모임은 닫고, 모든 모임 단체방에서 나갑니다.
 
 ### API
 
@@ -83,6 +94,7 @@
 | 경로 | action |
 |---|---|
 | `/api/dating` | `me` · `save` · `photoAdd` · `photoRemove` · `photoOrder` · `discover` · `like` · `pass` · `likedMe` · `matches` · `unmatch` |
+| `/api/meet` | `list` · `mine` · `get` · `create` · `apply` · `cancel` · `leave` · `approve` · `reject` · `kick` · `close` · `chat` · `send` |
 | `/api/dm` | `inbox` · `open` · `poll` · `send` · `unsend` · `hide` |
 | `/api/social` | `blocked` · `block` · `unblock` · `report` |
 | `/api/verify` | `status` · `verify` |
@@ -100,7 +112,7 @@ npm run dev                  # http://localhost:3000
 ```
 
 ```bash
-npm test          # 단위 테스트 56개 (원본 46 + 데이팅 10)
+npm test          # 단위 테스트 71개 (원본 52 + 데이팅 10 + 모임 9)
 npm run typecheck
 npm run lint
 npm run build     # 웹·API (Vercel이 쓰는 빌드)
@@ -149,17 +161,20 @@ npx cap open android       # Android Studio에서 서명·번들
 - [ ] 정지 기능 화면 연결(`banStore.setBan`은 있음, 누를 곳이 없음)
 - [ ] 사진 검수(원본은 OpenAI moderation을 썼음 — `api/media` 참고)
 - [ ] 개인정보: 사진 주소는 계정 id·사진 버전을 알아야 열리지만 로그인 없이 열림. 공개 전 서명된 주소로 바꾸기 검토
+- [ ] 모임: 술자리 안전 안내(처음 만나는 사람·귀가)를 어디에 둘지, 모임 신고 사유(노쇼·강요·유료 만남 권유) 추가
+- [ ] 모임 금지 표현 목록(`hasBlockedText`)을 운영하며 늘리기 — 지금은 금액·조건만남·스폰·용돈·만남비
 - [ ] Play 데이터 보안 신고(사진·메시지·생년)
 
 ## 로드맵
 
-1. **운영자 화면** — 신고 보기·정지·풀기(원본 `/ops` 이식)
-2. **사진을 Blob/CDN으로** — 지금은 KV에 data URL. 원본 `mediaStore`(Vercel Blob)로 옮기면 KV 용량이 줄고 빨라짐
-3. **추천 색인 나누기** — 지금은 최근 접속 400명을 훑음. 사람이 늘면 지역·성별별 정렬 집합으로
-4. **랜덤 대화** — 원본 `randomStore.joinOrPoll`(성인인증한 사람끼리 짝 맞추기)이 이미 들어 있음. 화면·API만 붙이면 됨
-5. **메시지에 사진** — `dmStore`는 사진을 받을 수 있음(`image`), 업로드 경로만 필요
-6. **영상 통화** — 원본 WebRTC 메시(`lib/rooms/mesh.ts`) + Cloudflare TURN
-7. **유료 기능** — 받은 좋아요 보기·좋아요 더 보내기 등. 원본 RevenueCat 연결(`premiumRequest.resolveRequestEntitlement`)을 다시 가져오면 됨
+1. **모임 다듬기** — 모임 끝난 뒤 서로 좋아요(참가자끼리 매칭), 신청·수락 알림(푸시), 노쇼 기록
+2. **운영자 화면** — 신고 보기·정지·풀기(원본 `/ops` 이식)
+3. **사진을 Blob/CDN으로** — 지금은 KV에 data URL. 원본 `mediaStore`(Vercel Blob)로 옮기면 KV 용량이 줄고 빨라짐
+4. **추천 색인 나누기** — 지금은 최근 접속 400명을 훑음. 사람이 늘면 지역·성별별 정렬 집합으로
+5. **랜덤 대화** — 원본 `randomStore.joinOrPoll`(성인인증한 사람끼리 짝 맞추기)이 이미 들어 있음. 화면·API만 붙이면 됨
+6. **메시지에 사진** — `dmStore`는 사진을 받을 수 있음(`image`), 업로드 경로만 필요
+7. **영상 통화** — 원본 WebRTC 메시(`lib/rooms/mesh.ts`) + Cloudflare TURN
+8. **유료 기능** — 받은 좋아요 보기·좋아요 더 보내기 등. 원본 RevenueCat 연결(`premiumRequest.resolveRequestEntitlement`)을 다시 가져오면 됨
 
 ## 폴더
 
@@ -168,11 +183,12 @@ src/
   app/
     page.tsx, layout.tsx, globals.css   화면 틀·색 토큰
     api/account/**                      계정 (원본)
-    api/dating/                         데이팅 (새로)
+    api/dating/  api/meet/              데이팅·모임 (새로)
     api/dm/  api/social/  api/verify/   메시지·차단신고·본인인증 (원본 고침)
   components/                           화면 (새로)
   lib/
     dating/                             데이팅 규칙·앱 요청 (새로)
+    meet/                               모임 규칙·앱 요청 (새로)
     server/                             저장소·서버 공용 (대부분 원본)
     account/  rooms/  random/  verify/  원본 모듈
 scripts/build-capacitor.mjs             앱 정적 빌드

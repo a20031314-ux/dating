@@ -1,5 +1,6 @@
 import { postAction } from "@/lib/api";
 import { apiUrl } from "@/lib/apiBase";
+import { photoPath } from "./photoPath";
 import { PHOTO_MAX_CHARS, type DatingCard, type DatingProfile, type DatingWant, type Gender, type MatchRow, type Region } from "./rules";
 import type { DmMessage, DmSummary, DmThread } from "@/lib/rooms/dm";
 
@@ -42,7 +43,7 @@ export const socialApi = {
 };
 
 export function photoUrl(accountId: string, version: string): string {
-  return apiUrl(`/api/dating/photo?u=${accountId}&v=${version}`);
+  return apiUrl(photoPath(accountId, version));
 }
 
 /**
