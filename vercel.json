@@ -1,0 +1,4 @@
+{
+  "regions": ["hnd1"],
+  "crons": [{ "path": "/api/account/purge", "schedule": "17 18 * * 0" }]
+}

@@ -124,7 +124,8 @@ npm run build     # 웹·API (Vercel이 쓰는 빌드)
 
 1. Vercel에서 이 레포를 가져옵니다(빌드 명령 `npm run build` 그대로).
 2. Upstash Redis를 연결합니다(Vercel Marketplace → Upstash → `KV_REST_API_URL`·`KV_REST_API_TOKEN`이 자동으로 들어감).
-3. 환경 변수를 넣습니다.
+3. 서버 지역은 `vercel.json`에서 도쿄(`hnd1`) — Redis(`dating-redis`)도 도쿄라 둘이 가깝다.
+4. 환경 변수를 넣습니다.
 
 | 변수 | 필요 | 설명 |
 |---|---|---|
@@ -138,6 +139,7 @@ npm run build     # 웹·API (Vercel이 쓰는 빌드)
 | `PORTONE_API_SECRET` | 본인인증 | 서버에만 |
 | `NEXT_PUBLIC_PORTONE_STORE_ID` / `NEXT_PUBLIC_PORTONE_IDV_CHANNEL_KEY` | 본인인증 | 앱에 들어가는 공개 값 |
 | `NEXT_PUBLIC_API_BASE` | 앱 빌드 | 앱이 부를 서버 주소, 예: `https://dating-app.vercel.app` |
+| `CRON_SECRET` | 권장 | 지운 계정 정리(매주 일요일 18:17 UTC, `vercel.json` crons)가 이 값으로 확인. 없으면 정리가 돌지 않음 |
 
 ## 안드로이드 앱
 
