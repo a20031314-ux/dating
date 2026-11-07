@@ -4,6 +4,8 @@
 
 > 앱 이름은 아직 정하지 않았습니다. 이름을 정하면 `package.json` `name`, `capacitor.config.ts` `appId`·`appName`, `src/app/layout.tsx` 제목, 환경 변수 `APP_NAME`을 바꾸세요. **`appId`는 Play에 한 번 올리면 바꿀 수 없습니다.**
 
+지금 배포: https://dating-amber-nine.vercel.app (Vercel 프로젝트 `dating`, 서버·Redis `dating-redis` 모두 도쿄)
+
 ## 할 수 있는 것
 
 | 화면 | 하는 일 |
